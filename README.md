@@ -71,6 +71,11 @@ not extend over the complete barrel footprint because that would make the
 perpendicular carrier collide with the driven disc at the mesh point. Use
 `--pinion-disc-radius` only when deliberately overriding this clearance.
 
+Recommended command to start with:
+```bash
+uv run python -m rollergear --rollers 10 --samples 200 --clearance 0.15
+```
+
 Useful adjustments:
 
 ```bash
