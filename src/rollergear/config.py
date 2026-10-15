@@ -11,7 +11,7 @@ class GearConfig:
 
     module_mm: float = 2.0
     roller_count: int = 10
-    roller_diameter_coeff: float = 0.8
+    roller_diameter_coeff: float = 4.0
     roller_pitch_radius_mm: float | None = None
     roller_length_mm: float | None = None
     pinion_hub_radius_mm: float = 7.0

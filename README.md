@@ -24,6 +24,13 @@ Related Papers on linear actuator.
 - https://www.mdpi.com/2076-3417/12/11/5620
 - https://patents.google.com/patent/TW202100895A/en
 
+## Method
+
+As the video above mentions mathematically deriving the gear teeth is difficult and 
+is relatively sufficient via a brute force method. The bruteforce method is done 
+such that both hubs are rotated and pinion roller geometry is subtracted from the gear
+at each angle.
+
 ## Generate the files
 
 [uv](https://docs.astral.sh/uv/) installs a compatible Python and CadQuery:
@@ -68,7 +75,7 @@ Useful adjustments:
 
 ```bash
 uv run python -m rollergear \
-  --module 2 --rollers 10 --roller-coeff 0.8 \
+  --module 2 --rollers 10 --roller-coeff 4.0 \
   --roller-length 30 --pinion-face-gap 0 --pinion-disc-radius 30 \
   --gear-ratio 1 --driven-radius 30 --driven-thickness 10 --driven-hole 10 \
   --driven-hub-radius 30 --driven-hub-length 5 \
@@ -90,7 +97,7 @@ resolved values with an otherwise default command.
 | `-h`, `--help` | — | Prints the complete command-line help and exits without generating a model. |
 | `--module` | `2.0 mm` | Sets the basic scale used to calculate barrel diameter. Barrel diameter is `module × roller coefficient`. |
 | `--rollers` | `10` | Sets the number of equally spaced barrel teeth around the input pinion. It also sets the number of repeated sectors used by the experimental sector-cut mode. |
-| `--roller-coeff` | `0.8` | Multiplies the module to determine barrel diameter. The defaults produce a `1.6 mm` diameter and `0.8 mm` radius. |
+| `--roller-coeff` | `4.0` | Multiplies the module to determine barrel diameter. The defaults produce an `8 mm` diameter and `4 mm` radius. |
 | `--roller-length` | Driven radius (`30 mm`) | Sets barrel length along `+Z`, starting at `--input-z`. When omitted, it follows `--driven-radius`. |
 | `--pinion-disc-radius` | Driven radius (`30 mm`) | Sets the input pinion-disc radius. The current model requires it to equal `--driven-radius`; omitting it maintains that equality automatically. |
 | `--pinion-face-gap` | `0.0 mm` | Sets the axial gap between the pinion disc’s positive-Z face and the start of the barrels. Increasing it moves the disc farther toward `-Z`; it does not move the barrels. |
@@ -163,10 +170,14 @@ printing an updating terminal bar.
 uv run python -m rollergear --verify-clearance
 ```
 
+Any coordinate reference is based on the following orientation:
+
+![output_image](./output_reference.png)
+
 ## Design assumptions and limits
 
-- Pinion and driven discs both default to a 30 mm radius. The 0.8 mm barrel
-  radius puts barrel centers at a 29.2 mm pitch radius. Barrel length defaults
+- Pinion and driven discs both default to a 30 mm radius. The 4 mm barrel
+  radius puts barrel centers at a 26 mm pitch radius. Barrel length defaults
   to the driven radius, so the default barrels extend 30 mm from their start
   plane toward +Z. `--roller-length` overrides this resolved default.
 - The driven gear center-hole diameter defaults to 10 mm and can be changed

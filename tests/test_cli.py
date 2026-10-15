@@ -15,6 +15,10 @@ def test_driven_hole_defaults_to_10_mm() -> None:
     assert parser().parse_args([]).driven_shaft_hole_mm == 10.0
 
 
+def test_roller_coefficient_defaults_to_4() -> None:
+    assert parser().parse_args([]).roller_diameter_coeff == 4.0
+
+
 def test_driven_hub_defaults() -> None:
     args = parser().parse_args([])
     assert args.driven_hub_radius_mm is None

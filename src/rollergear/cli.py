@@ -93,7 +93,7 @@ def parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="Generate a 90-degree swept-volume roller gear")
     p.add_argument("--module", type=float, default=2.0, dest="module_mm")
     p.add_argument("--rollers", type=int, default=10, dest="roller_count")
-    p.add_argument("--roller-coeff", type=float, default=0.8, dest="roller_diameter_coeff")
+    p.add_argument("--roller-coeff", type=float, default=4.0, dest="roller_diameter_coeff")
     p.add_argument(
         "--roller-length",
         type=float,
