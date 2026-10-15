@@ -1,0 +1,164 @@
+<div id="gearbox-argument-diagram">
+  <style>
+    #gearbox-argument-diagram { color: var(--foreground); }
+    #gearbox-argument-diagram .layout { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(250px,.8fr); gap:20px; align-items:start; }
+    #gearbox-argument-diagram .stage { min-width:0; }
+    #gearbox-argument-diagram .views { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    #gearbox-argument-diagram svg { width:100%; height:auto; display:block; }
+    #gearbox-argument-diagram .frame { fill:var(--card); stroke:var(--border); stroke-width:1; }
+    #gearbox-argument-diagram .gear { fill:color-mix(in srgb, var(--viz-series-1) 18%, transparent); stroke:var(--viz-series-1); stroke-width:2; }
+    #gearbox-argument-diagram .hub { fill:color-mix(in srgb, var(--viz-series-2) 20%, transparent); stroke:var(--viz-series-2); stroke-width:2; }
+    #gearbox-argument-diagram .roller { fill:color-mix(in srgb, var(--viz-series-3) 28%, transparent); stroke:var(--viz-series-3); stroke-width:1.5; }
+    #gearbox-argument-diagram .axis { stroke:var(--muted-foreground); stroke-width:1.5; stroke-dasharray:5 4; }
+    #gearbox-argument-diagram .dim { stroke:var(--foreground); stroke-width:1.25; fill:none; }
+    #gearbox-argument-diagram .motion { stroke:var(--viz-series-4); stroke-width:2; fill:none; }
+    #gearbox-argument-diagram .sample { stroke:var(--viz-series-5); stroke-width:2; fill:none; stroke-dasharray:3 3; }
+    #gearbox-argument-diagram .clearance { fill:none; stroke:var(--viz-series-6); stroke-width:2; stroke-dasharray:4 3; }
+    #gearbox-argument-diagram text { fill:var(--foreground); font-size:12px; }
+    #gearbox-argument-diagram .subtle { fill:var(--muted-foreground); }
+    #gearbox-argument-diagram .tag { fill:var(--card); stroke:var(--border); stroke-width:1; }
+    #gearbox-argument-diagram .arguments { display:grid; gap:6px; }
+    #gearbox-argument-diagram .arg { display:grid; grid-template-columns:minmax(125px,1fr) auto; gap:8px; align-items:center; width:100%; text-align:left; }
+    #gearbox-argument-diagram .arg code { overflow-wrap:anywhere; }
+    #gearbox-argument-diagram .arg[aria-pressed="true"] { background:var(--primary); color:var(--primary-foreground); }
+    #gearbox-argument-diagram .arg[aria-pressed="true"] code { color:inherit; }
+    #gearbox-argument-diagram .detail { margin-top:12px; min-height:92px; }
+    #gearbox-argument-diagram .detail strong { display:block; margin-bottom:5px; }
+    #gearbox-argument-diagram .value { color:var(--muted-foreground); white-space:nowrap; }
+    #gearbox-argument-diagram .legend { margin-top:10px; display:flex; flex-wrap:wrap; gap:12px; }
+    #gearbox-argument-diagram .legend span { display:inline-flex; align-items:center; gap:5px; }
+    #gearbox-argument-diagram .swatch { width:18px; height:3px; display:inline-block; }
+    #gearbox-argument-diagram [data-key] { opacity:.32; transition:opacity 160ms ease, stroke-width 160ms ease; }
+    #gearbox-argument-diagram [data-key].active { opacity:1; stroke-width:3; }
+    #gearbox-argument-diagram[data-show-all="true"] [data-key] { opacity:1; }
+    @media (max-width:680px) {
+      #gearbox-argument-diagram .layout { grid-template-columns:1fr; }
+      #gearbox-argument-diagram .views { grid-template-columns:1fr; }
+    }
+  </style>
+
+  <h2>Gearbox command arguments</h2>
+  <div class="layout">
+    <div class="stage">
+      <div class="views">
+        <svg viewBox="0 0 370 350" role="img" aria-labelledby="top-title top-desc">
+          <title id="top-title">Top view along the input Z axis</title>
+          <desc id="top-desc">The driven gear is viewed edge-on around the X axis. The roller pinion is centered forty millimetres away on Y.</desc>
+          <rect class="frame" x="1" y="1" width="368" height="348" rx="8"/>
+          <text x="16" y="24">TOP VIEW · looking down Z</text>
+          <line class="axis" x1="25" y1="234" x2="344" y2="234"/>
+          <text class="subtle" x="330" y="226">+X</text>
+          <line class="axis" x1="140" y1="320" x2="140" y2="44"/>
+          <text class="subtle" x="148" y="55">+Y</text>
+
+          <rect class="gear" x="105" y="204" width="70" height="60" rx="3" data-key="driven-thickness driven-radius"/>
+          <line class="dim" x1="105" y1="282" x2="175" y2="282" data-key="driven-thickness"/>
+          <path class="dim" d="M105 276v12m70-12v12" data-key="driven-thickness"/>
+          <text x="110" y="300" data-key="driven-thickness">10 mm thick</text>
+
+          <circle class="hub" cx="140" cy="114" r="35" data-key="module rollers roller-coeff"/>
+          <g data-key="rollers">
+            <circle class="roller" cx="140" cy="64" r="6"/><circle class="roller" cx="169" cy="74" r="6"/>
+            <circle class="roller" cx="188" cy="99" r="6"/><circle class="roller" cx="188" cy="129" r="6"/>
+            <circle class="roller" cx="169" cy="154" r="6"/><circle class="roller" cx="140" cy="164" r="6"/>
+            <circle class="roller" cx="111" cy="154" r="6"/><circle class="roller" cx="92" cy="129" r="6"/>
+            <circle class="roller" cx="92" cy="99" r="6"/><circle class="roller" cx="111" cy="74" r="6"/>
+          </g>
+          <circle class="clearance" cx="140" cy="164" r="8" data-key="clearance"/>
+          <line class="dim" x1="140" y1="234" x2="140" y2="114" data-key="input-y"/>
+          <path class="dim" d="M134 234h12m-12-120h12" data-key="input-y"/>
+          <text x="150" y="188" data-key="input-y">Y = 30 mm</text>
+          <path class="motion" d="M104 89 A43 43 0 0 1 175 85" data-key="direction phase gear-ratio"/>
+          <path class="motion" d="M174 85l-9-1 5-8" data-key="direction phase gear-ratio"/>
+          <text x="198" y="105" data-key="direction">input q</text>
+          <circle class="tag" cx="140" cy="234" r="5"/>
+          <circle class="tag" cx="140" cy="114" r="5"/>
+        </svg>
+
+        <svg viewBox="0 0 370 350" role="img" aria-labelledby="side-title side-desc">
+          <title id="side-title">Side view along the output X axis</title>
+          <desc id="side-desc">The driven gear appears as a disk of thirty millimetre radius. The input axis is vertical and tangent to its rim.</desc>
+          <rect class="frame" x="1" y="1" width="368" height="348" rx="8"/>
+          <text x="16" y="24">SIDE VIEW · looking down X</text>
+          <circle class="gear" cx="172" cy="205" r="105" data-key="driven-radius gear-ratio phase direction samples clearance"/>
+          <circle class="frame" cx="172" cy="205" r="10"/>
+          <line class="axis" x1="172" y1="326" x2="172" y2="46"/>
+          <text class="subtle" x="180" y="56">input axis Z</text>
+          <line class="dim" x1="172" y1="205" x2="277" y2="205" data-key="driven-radius"/>
+          <path class="dim" d="M172 199v12m105-12v12" data-key="driven-radius"/>
+          <text x="205" y="196" data-key="driven-radius">R = 30 mm</text>
+          <rect class="roller" x="164" y="92" width="16" height="40" rx="8" data-key="module roller-coeff clearance"/>
+          <rect class="clearance" x="162" y="90" width="20" height="44" rx="10" data-key="clearance"/>
+          <path class="motion" d="M79 250 A105 105 0 0 0 89 144" data-key="direction phase gear-ratio"/>
+          <path class="motion" d="M89 144l-1 10-9-4" data-key="direction phase gear-ratio"/>
+          <text x="47" y="275" data-key="direction">output = −q/3</text>
+          <path class="sample" d="M279 183 A109 109 0 0 1 281 216" data-key="samples"/>
+          <path class="sample" d="M275 176l8 5m-3 42l-8 5" data-key="samples"/>
+          <text x="285" y="196" data-key="samples">240 samples</text>
+          <text x="285" y="212" data-key="samples">per input rev</text>
+          <path class="motion" d="M153 100 A25 25 0 0 1 191 105" data-key="phase"/>
+          <text x="200" y="92" data-key="phase">phase 0°</text>
+        </svg>
+      </div>
+      <div class="legend text-small">
+        <span><i class="swatch" style="background:var(--viz-series-1)"></i>driven gear</span>
+        <span><i class="swatch" style="background:var(--viz-series-2)"></i>pinion hub</span>
+        <span><i class="swatch" style="background:var(--viz-series-3)"></i>rollers</span>
+        <span><i class="swatch" style="background:var(--viz-series-6)"></i>clearance envelope</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="arguments" aria-label="Choose an argument to highlight">
+        <button class="btn arg" type="button" data-arg="module"><code>--module</code><span class="value">2 mm</span></button>
+        <button class="btn arg" type="button" data-arg="rollers"><code>--rollers</code><span class="value">10</span></button>
+        <button class="btn arg" type="button" data-arg="roller-coeff"><code>--roller-coeff</code><span class="value">0.8</span></button>
+        <button class="btn arg" type="button" data-arg="gear-ratio"><code>--gear-ratio</code><span class="value">3:1</span></button>
+        <button class="btn arg" type="button" data-arg="driven-radius"><code>--driven-radius</code><span class="value">30 mm</span></button>
+        <button class="btn arg" type="button" data-arg="driven-thickness"><code>--driven-thickness</code><span class="value">10 mm</span></button>
+        <button class="btn arg" type="button" data-arg="input-y"><code>--input-y</code><span class="value">30 mm</span></button>
+        <button class="btn arg" type="button" data-arg="phase"><code>--phase</code><span class="value">0°</span></button>
+        <button class="btn arg" type="button" data-arg="direction"><code>--direction</code><span class="value">−1</span></button>
+        <button class="btn arg" type="button" data-arg="samples"><code>--samples</code><span class="value">240/rev</span></button>
+        <button class="btn arg" type="button" data-arg="clearance"><code>--clearance</code><span class="value">0.15 mm</span></button>
+        <button class="btn arg" type="button" data-arg="output"><code>--output</code><span class="value">folder</span></button>
+      </div>
+      <div class="card detail" aria-live="polite">
+        <strong id="arg-title">Select an argument</strong>
+        <span id="arg-description">The matching dimension or motion will be highlighted in both views.</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const root = document.getElementById('gearbox-argument-diagram');
+      const descriptions = {
+        module: ['Module = 2 mm', 'Sets the overall roller-pinion scale. Here the roller-center pitch radius is module × rollers ÷ 2 = 10 mm.'],
+        rollers: ['Rollers = 10', 'Creates ten equally spaced cylindrical rollers around the input shaft.'],
+        'roller-coeff': ['Roller coefficient = 0.8', 'Roller diameter is module × coefficient = 1.6 mm, so each physical roller has a 0.8 mm radius.'],
+        'gear-ratio': ['Gear ratio = 3', 'The input turns three revolutions while the output turns one revolution: output angle = direction × input angle ÷ 3 + phase.'],
+        'driven-radius': ['Driven radius = 30 mm', 'Radius of the cylindrical blank before roller paths are subtracted; its starting diameter is 60 mm.'],
+        'driven-thickness': ['Driven thickness = 10 mm', 'Axial width of the driven-gear blank along its X rotation axis.'],
+        'input-y': ['Input Y = 30 mm', 'Places the pinion center axis at Y = its default 30 mm radius. The driven gear defaults independently to center coordinates (0, 0, 30).'],
+        phase: ['Output phase = 0°', 'Initial rotational alignment of the output blank when the input angle is zero. It shifts where the generated tooth pattern begins.'],
+        direction: ['Direction = −1', 'Makes the output rotate opposite the signed input motion. Use +1 to generate the other synchronized direction.'],
+        samples: ['Samples = 240 per input revolution', 'Controls sweep resolution. With ratio 3, generation evaluates 720 synchronized states across three input revolutions.'],
+        clearance: ['Clearance = 0.15 mm', 'Expands only the virtual cutting rollers by 0.15 mm radially and axially. It does not enlarge the printable rollers.'],
+        output: ['Output folder', 'Writes the STEP, STL, and validation JSON files under output/custom. It does not change the geometry.']
+      };
+      const buttons = [...root.querySelectorAll('[data-arg]')];
+      function select(key) {
+        root.dataset.showAll = key === 'output' ? 'true' : 'false';
+        buttons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.arg === key)));
+        root.querySelectorAll('[data-key]').forEach(mark => {
+          mark.classList.toggle('active', mark.dataset.key.split(' ').includes(key));
+        });
+        document.getElementById('arg-title').textContent = descriptions[key][0];
+        document.getElementById('arg-description').textContent = descriptions[key][1];
+      }
+      buttons.forEach(button => button.addEventListener('click', () => select(button.dataset.arg)));
+      select('module');
+    })();
+  </script>
+</div>
