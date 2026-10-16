@@ -106,7 +106,7 @@ def parser() -> argparse.ArgumentParser:
         type=float,
         default=None,
         dest="pinion_disc_radius_mm",
-        help="Pinion radius; when supplied it must equal --driven-radius (mm)",
+        help="Input pinion-disc radius; defaults to --driven-radius (mm)",
     )
     p.add_argument(
         "--pinion-face-gap",
@@ -173,8 +173,8 @@ def parser() -> argparse.ArgumentParser:
         action=argparse.BooleanOptionalAction,
         default=None,
         help=(
-            "Cut one rotational sector and reconstruct the driven gear; defaults on for "
-            "1:1, off otherwise"
+            "Cut one of rollers * ratio sectors and reconstruct the driven gear; "
+            "enabled by default; use --no-experimental-sector-cut to disable"
         ),
     )
     p.add_argument(
@@ -270,7 +270,8 @@ def main(argv: list[str] | None = None) -> int:
             "driven_start_face_world_y_mm": config.driven_center_y,
             "driven_positive_face_world_y_mm": config.driven_center_y + config.driven_gear_thickness_mm,
             "driven_axis_world_z_mm": config.driven_center_z,
-            "shared_pinion_and_driven_radius_mm": config.driven_gear_radius_mm,
+            "pinion_disc_radius_mm": config.pinion_disc_radius,
+            "driven_gear_radius_mm": config.driven_gear_radius_mm,
             "motion_ratio_input_to_output": "1:1" if config.gear_ratio == 1 else f"{config.gear_ratio}:1",
             "pinion_barrels_project_from_disc_face": True,
             "mesh_watertight": gear.isValid() and len(solids) == 1,

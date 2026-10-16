@@ -104,7 +104,7 @@ resolved values with an otherwise default command.
 | `--rollers` | `10` | Sets the number of equally spaced barrel teeth around the input pinion. It also sets the number of repeated sectors used by the experimental sector-cut mode. |
 | `--roller-coeff` | `4.0` | Multiplies the module to determine barrel diameter. The defaults produce an `8 mm` diameter and `4 mm` radius. |
 | `--roller-length` | Driven radius (`30 mm`) | Sets barrel length along `+Z`, starting at `--input-z`. When omitted, it follows `--driven-radius`. |
-| `--pinion-disc-radius` | Driven radius (`30 mm`) | Sets the input pinion-disc radius. The current model requires it to equal `--driven-radius`; omitting it maintains that equality automatically. |
+| `--pinion-disc-radius` | Driven radius (`30 mm`) | Sets the input pinion-disc radius independently. When omitted, it follows `--driven-radius`. The barrel pitch circle is inset from this radius by one barrel radius. |
 | `--pinion-face-gap` | `0.0 mm` | Sets the axial gap between the pinion disc’s positive-Z face and the start of the barrels. Increasing it moves the disc farther toward `-Z`; it does not move the barrels. |
 | `--gear-ratio` | `1.0` | Sets input revolutions per driven revolution. This proof of concept requires a positive integer so the sampled motion closes. |
 | `--driven-radius` | `30.0 mm` | Sets the driven-gear blank radius. It also supplies the default pinion radius, barrel length, input Y position, and driven Z position. |
@@ -123,7 +123,7 @@ resolved values with an otherwise default command.
 | `--samples` | `120` per input revolution | Sets motion-sampling resolution. More samples reduce envelope scalloping but increase precheck and Boolean time. |
 | `--clearance` | `0.15 mm` | Expands virtual cutter radius and both cutter ends. It adds running clearance without enlarging the exported printable barrels. |
 | `--cut-batch-size` | `32` | Sets the maximum number of explicit barrel cutters per OpenCascade Boolean operation. Use `1` for legacy sequential cutting. Failed batches automatically fall back to individual cuts. |
-| `--experimental-sector-cut`, `--no-experimental-sector-cut` | On for `1:1`; off otherwise | Enables or disables cutting one overlapped angular slice and reconstructing the driven gear by rotation. Sector cutting is supported only for a 1:1 ratio, requires at least three barrels, and requires `--samples` divisible by the barrel count. |
+| `--experimental-sector-cut`, `--no-experimental-sector-cut` | On | Enables or disables cutting one overlapped angular slice and reconstructing the driven gear by rotation. It creates `rollers × gear ratio` sectors, requires at least three barrels, and requires `--samples` divisible by the barrel count. Use the `--no-` form to force full-circle generation. |
 | `--verify-clearance` | Off | Runs the optional post-cut intersection check against every retained barrel pose and aborts if sampled overlap remains. This adds generation time. |
 | `--output` | New timestamped directory | Selects the output directory. When omitted, the command creates `output/run-YYYYMMDD-HHMMSS`, adding a numeric suffix if necessary. |
 | `--preview` | Off | Forces a quick draft with `30` samples per input revolution, overriding the value supplied by `--samples`. |
@@ -138,8 +138,8 @@ input revolution and one full driven revolution. Start with
 `--preview`; increase sampling only after inspecting the layout. More samples
 reduce scalloping but increase Boolean time.
 
-For a 1:1 ratio, the default symmetry mode cuts an overlapped working slice,
-trims it back to exactly `360 / rollers` degrees, and rotates copies around the
+By default, symmetry mode cuts an overlapped working slice, trims it back to
+exactly `360 / (rollers × gear ratio)` degrees, and rotates copies around the
 driven axis. No extra flag is required:
 
 ```bash
@@ -147,12 +147,13 @@ uv run python -m rollergear
 ```
 
 Use `--no-experimental-sector-cut` to force full-circle cutting for comparison.
-Sector mode is limited to a 1:1 ratio, requires at least three barrels, and
+The generator uses `rollers × gear ratio` repeated sectors, so four rollers at
+2:1 produce eight 45° sectors. Sector mode requires at least three barrels and
 requires `--samples` to be divisible by the barrel count. Reconstructed sector
 boundaries can be more sensitive to OpenCascade tolerances than full-circle
-generation. Valid disconnected multi-solid results are exported and their
-solid count is recorded in `validation_report.json`; inspect the resulting STEP
-before manufacturing it.
+generation. Valid disconnected multi-solid results are exported and their solid
+count is recorded in `validation_report.json`; inspect the resulting STEP before
+manufacturing it.
 
 During generation the CLI displays live progress for both expensive stages:
 sampling the synchronized roller sweep and applying the OpenCascade Boolean
@@ -181,7 +182,8 @@ Any coordinate reference is based on the following orientation:
 
 ## Design assumptions and limits
 
-- Pinion and driven discs both default to a 30 mm radius. The 4 mm barrel
+- Pinion and driven discs both default to a 30 mm radius, but
+  `--pinion-disc-radius` can set a different input-disc radius. The 4 mm barrel
   radius puts barrel centers at a 26 mm pitch radius. Barrel length defaults
   to the driven radius, so the default barrels extend 30 mm from their start
   plane toward +Z. `--roller-length` overrides this resolved default.

@@ -301,7 +301,7 @@ def cut_driven_gear(
     sector_cutter_solids: int | None = None
     symmetry_sectors = 1
     if config.use_sector_cut:
-        symmetry_sectors = config.roller_count
+        symmetry_sectors = config.symmetry_sector_count
         exact_half_angle = pi / symmetry_sectors
         # Work beyond both exact boundaries by one driven-output sample. Cutting
         # on the expanded shape avoids coincident cutter/slice faces; trimming

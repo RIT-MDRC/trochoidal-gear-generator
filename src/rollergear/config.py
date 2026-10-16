@@ -50,8 +50,8 @@ class GearConfig:
     def roller_pitch_radius(self) -> float:
         if self.roller_pitch_radius_mm is not None:
             return self.roller_pitch_radius_mm
-        # Put the complete barrel footprint on the shared pinion radius.
-        return self.driven_gear_radius_mm - self.roller_radius
+        # Keep the complete barrel footprint inside the input pinion disc.
+        return self.pinion_disc_radius - self.roller_radius
 
     @property
     def roller_radius(self) -> float:
@@ -65,7 +65,8 @@ class GearConfig:
 
     @property
     def pinion_disc_radius(self) -> float:
-        # The user-requested geometry uses equal pinion and driven radii.
+        if self.pinion_disc_radius_mm is not None:
+            return self.pinion_disc_radius_mm
         return self.driven_gear_radius_mm
 
     @property
@@ -117,7 +118,13 @@ class GearConfig:
     def use_sector_cut(self) -> bool:
         if self.experimental_sector_cut is not None:
             return self.experimental_sector_cut
-        return isclose(self.gear_ratio, 1.0, abs_tol=1e-9)
+        return True
+
+    @property
+    def symmetry_sector_count(self) -> int:
+        if not self.use_sector_cut:
+            return 1
+        return self.roller_count * self.input_revolutions
 
     def validate(self) -> None:
         positive = {
@@ -125,6 +132,7 @@ class GearConfig:
             "roller_count": self.roller_count,
             "roller_diameter_coeff": self.roller_diameter_coeff,
             "roller_length_mm_resolved": self.roller_length,
+            "pinion_disc_radius_mm_resolved": self.pinion_disc_radius,
             "driven_gear_radius_mm": self.driven_gear_radius_mm,
             "driven_gear_thickness_mm": self.driven_gear_thickness_mm,
             "driven_hub_radius_mm_resolved": self.driven_hub_radius,
@@ -138,13 +146,9 @@ class GearConfig:
         if self.output_direction not in (-1, 1):
             raise ValueError("output_direction must be -1 or +1")
         if self.roller_radius >= self.driven_gear_radius_mm:
-            raise ValueError("roller radius must be smaller than the shared gear radius")
-        if self.pinion_disc_radius_mm is not None and not isclose(
-            self.pinion_disc_radius_mm,
-            self.driven_gear_radius_mm,
-            abs_tol=1e-9,
-        ):
-            raise ValueError("pinion_disc_radius_mm must equal driven_gear_radius_mm")
+            raise ValueError("roller radius must be smaller than the driven gear radius")
+        if self.roller_radius >= self.pinion_disc_radius:
+            raise ValueError("roller radius must be smaller than the pinion disc radius")
         if self.pinion_face_gap_mm < 0:
             raise ValueError("pinion_face_gap_mm must be zero or positive")
         if self.driven_shaft_hole_mm >= 2 * self.driven_gear_radius_mm:
@@ -156,8 +160,6 @@ class GearConfig:
         if self.driven_hub_radius > self.driven_gear_radius_mm:
             raise ValueError("Driven hub radius cannot exceed the driven gear radius")
         if self.use_sector_cut:
-            if not isclose(self.gear_ratio, 1.0, abs_tol=1e-9):
-                raise ValueError("Sector cutting is supported only for a 1:1 gear ratio")
             if self.roller_count < 3:
                 raise ValueError("Sector cutting requires at least 3 barrels")
             if self.samples_per_input_revolution % self.roller_count:
@@ -186,5 +188,6 @@ class GearConfig:
             output_axis_direction=[0.0, 1.0, 0.0],
             total_samples=self.total_samples,
             experimental_sector_cut_resolved=self.use_sector_cut,
+            symmetry_sector_count_resolved=self.symmetry_sector_count,
         )
         return result

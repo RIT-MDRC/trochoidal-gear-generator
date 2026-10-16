@@ -97,9 +97,23 @@ def test_default_motion_is_one_to_one() -> None:
     assert isclose(abs(output_angle(config, 2 * pi) - output_angle(config, 0)), 2 * pi)
 
 
-def test_pinion_and_driven_discs_have_equal_radii() -> None:
+def test_pinion_and_driven_discs_have_equal_radii_by_default() -> None:
     config = GearConfig()
     assert isclose(config.pinion_disc_radius, config.driven_gear_radius_mm)
+
+
+def test_pinion_radius_can_differ_from_driven_radius() -> None:
+    config = GearConfig(
+        pinion_disc_radius_mm=22.0,
+        driven_gear_radius_mm=11.0,
+        roller_diameter_coeff=2.0,
+    )
+
+    config.validate()
+    assert isclose(config.pinion_disc_radius, 22.0)
+    assert isclose(config.driven_gear_radius_mm, 11.0)
+    assert isclose(config.roller_pitch_radius, 20.0)
+    assert isclose(config.input_axis_y, 22.0)
 
 
 def test_barrel_pitch_circle_is_inset_by_barrel_radius() -> None:
@@ -162,7 +176,18 @@ def test_boolean_batch_accepts_valid_disconnected_results() -> None:
     assert fallbacks == 0
 
 
-def test_sector_cut_defaults_on_only_for_one_to_one_ratio() -> None:
+def test_sector_cut_defaults_on_for_all_integer_ratios() -> None:
     assert GearConfig().use_sector_cut is True
-    assert GearConfig(gear_ratio=2.0).use_sector_cut is False
+    assert GearConfig(gear_ratio=2.0).use_sector_cut is True
     assert GearConfig(experimental_sector_cut=False).use_sector_cut is False
+
+
+def test_sector_cut_multiplies_rollers_by_integer_ratio() -> None:
+    config = GearConfig(
+        roller_count=4,
+        gear_ratio=2.0,
+        samples_per_input_revolution=120,
+    )
+
+    config.validate()
+    assert config.symmetry_sector_count == 8
